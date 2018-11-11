@@ -87,4 +87,10 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+
+  const syncDatabase = require('./sync-database');
+  syncDatabase()
+      .then(() => {
+          console.log('Databases sync');
+      });
 }

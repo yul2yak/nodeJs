@@ -7,14 +7,22 @@ const sequelize = new Sequelize(
     {
         host: 'localhost',
         dialect: 'mysql',
-    }
+        // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
+        operatorsAliases: false,
+    },
 );
 
 const User = sequelize.define('user', {
-    name: Sequelize.STRING
+    name: Sequelize.STRING,
+    userId: Sequelize.STRING,
+});
+
+const Game = sequelize.define('game', {
+    game: Sequelize.JSON,
 });
 
 module.exports = {
     sequelize: sequelize,
-    User: User
+    User: User,
+    Game: Game
 };

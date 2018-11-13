@@ -3,8 +3,8 @@ const app = express();
 const models = require('../../models/models');
 
 exports.index = (req, res) => {
-    models.User.findAll()
-        .then(users => res.json(users));
+    models.Game.findAll()
+        .then(games => res.json(games));
 };
 
 exports.show = (req, res) => {
@@ -13,15 +13,15 @@ exports.show = (req, res) => {
         return res.status(404).json({error: 'Incorrect id'});
     }
 
-    models.User.findOne({
+    models.Game.findOne({
         where: {
             id: id
         }
-    }).then(user => {
-        if (!user) {
-            return res.status(404).json({error: 'No user'});
+    }).then(game => {
+        if (!game) {
+            return res.status(404).json({error: 'No game'});
         }
-        return res.json(user);
+        return res.json(game);
     });
 };
 
@@ -31,7 +31,7 @@ exports.destory = (req, res) => {
         return res.status(404).json({error: 'Incorrect id'});
     }
 
-    models.User.destroy({
+    models.Game.destroy({
         where: {
             id: id
         }
@@ -39,14 +39,14 @@ exports.destory = (req, res) => {
 };
 
 exports.create = (req, res) => {
-    const name = req.body.name || '';
-    if (!name.length) {
-        return res.status(400).json({error: 'Incorrect name'});
+    const game = req.body.game || '';
+    if (!game.length) {
+        return res.status(400).json({error: 'Incorrect date'});
     }
 
-    models.User.create({
-        name: name
-    }).then((user) => res.status(201).json(user))
+    models.Game.create({
+        game: game
+    }).then((game) => res.status(201).json(game))
 };
 
 exports.update = (req, res) => {

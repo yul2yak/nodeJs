@@ -18,7 +18,16 @@ const User = sequelize.define('user', {
 });
 
 const Game = sequelize.define('game', {
-    game: Sequelize.JSON,
+    game: {
+        type: Sequelize.JSON,
+        set: function (value) {
+            if (typeof value === 'string') {
+                this.setDataValue('game', JSON.parse(value));
+            } else {
+                this.setDataValue('game', value);
+            }
+        }
+    },
 });
 
 module.exports = {

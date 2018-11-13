@@ -16,7 +16,11 @@ const environments = {
     },
 
     production: {
-
+        mysql: {
+            username: 'root',
+            password: 'root',
+            database: 'node_api_codelab_prd'
+        }
     }
 }
 

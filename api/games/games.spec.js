@@ -34,9 +34,9 @@ describe('TEST /api/games', () => {
             models.Game.bulkCreate(games).then(() => done());
         });
 
-        after('clear up database', (done) => {
+        /*after('clear up database', (done) => {
             syncDatabase().then(() => done());
-        });
+        });*/
 
         it('get should return 200 status code', (done) => {
             request(app)
@@ -106,11 +106,12 @@ describe('TEST /api/games', () => {
                 })
         });
 
+        const data = JSON.parse('{"date":"20181112","sequence":"1","scourge":{"result":"승","score":100,"heroes":[{"player":"김문호","playerId":"muno","hero":"스벤"},{"player":"장창우","playerId":"blu","hero":"나즈그렐"}]},"sentinel": {"result":"패","score":0,"heroes":[{"player":"구남도","playerId":"namzzok","hero":"실크"},{"player":"홍재권","playerId":"hjk","hero":"갈리토스"}]}}');
         it('post should return 201 created status code', (done) => {
             request(app)
                 .post('/api/games')
-                .type('json')
-                .send(JSON.stringify({"date":"20181113","sequence":"16","scourge":{"result":"승","score":100,"heroes":[{"player":"김성율","playerId":"yul2ya","hero":"나카챠"},{"player":"김윤규","playerId":"nanun","hero":"아가멤논"}]},"sentinel": {"result":"패","score":0,"heroes":[{"player":"김문호","playerId":"muno","hero":"플루토"},{"player":"홍재권","playerId":"hjk","hero":"마누트"}]}}))
+                .set('Content-Type', 'application/json')
+                .send({game: JSON.stringify(data)})
                 .expect(201)
                 .end((err, res) => {
                     if (err) throw err;

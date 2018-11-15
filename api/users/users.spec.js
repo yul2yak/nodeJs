@@ -34,9 +34,9 @@ describe('TEST /api/users', () => {
             models.User.bulkCreate(users).then(() => done());
         });
 
-        after('clear up database', (done) => {
+        /*after('clear up database', (done) => {
             syncDatabase().then(() => done());
-        });
+        });*/
 
         it('get should return 200 status code', (done) => {
             request(app)

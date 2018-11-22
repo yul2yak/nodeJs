@@ -1,0 +1,45 @@
+{
+  "name": "ykachaos",
+  "version": "0.0.0",
+  "description": "Cloud Functions for Firebase",
+  "private": true,
+  "scripts": {
+    "serve": "firebase serve --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "test": "cross-env NODE_ENV=test node_modules/.bin/mocha api/*/*.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/yul2yak/nodeJs.git"
+  },
+  "author": "yul2ya.kim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yul2yak/nodeJs/issues"
+  },
+  "homepage": "https://github.com/yul2yak/nodeJs#readme",
+  "dependencies": {
+    "consolidate": "^0.15.1",
+    "express": "~4.16.4",
+    "firebase-admin": "~6.0.0",
+    "firebase-functions": "^2.1.0",
+    "handlebars": "^4.0.12",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "http-errors": "~1.6.2",
+    "morgan": "~1.9.0",
+    "mysql2": "^1.6.4",
+    "pug": "2.0.0-beta11",
+    "sequelize": "^4.41.1"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "mocha": "^5.2.0",
+    "should": "^13.2.3",
+    "supertest": "^3.3.0"
+  }
+}

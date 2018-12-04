@@ -12,8 +12,14 @@ const firebaseApp = firebase.initializeApp(config);
 const database = firebase.database();
 const db = firebase.firestore(firebaseApp);
 
+/* POST users listing. */
+router.post('/', function (req, res) {
+    res.send('post /games is called');
+    //db.collection('games').doc('20181202').set(data);
+});
+
 /* GET users listing. */
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
     let arrayGames = [];
     let arrayUsers = [];
     let gamesCollection, usersCollection;
@@ -36,27 +42,27 @@ router.get('/', function (req, res, next) {
                 };
                 arrayUsers.push(user);
             });
-        });
-        gamesCollection.get().then(gamesSnapshot => {
-            gamesSnapshot.forEach(gamesDoc => {
-                console.log(gamesDoc.id, '=>', gamesDoc.data());
-                let day = {
-                    date: gamesDoc.id,
-                    matches: gamesDoc.data().matches
-                };
-                arrayGames.push(day);
-            });
-            console.log('=======arrayUsers');
-            console.log(arrayUsers);
-            const users = JSON.stringify(arrayUsers);
-            console.log('=======users');
-            console.log(users);
-            console.log('=======arrayGames');
-            console.log(arrayGames);
-            const games = JSON.stringify(arrayGames);
-            console.log('=======games');
-            console.log(games);
-            const output = `
+
+            gamesCollection.get().then(gamesSnapshot => {
+                gamesSnapshot.forEach(gamesDoc => {
+                    console.log(gamesDoc.id, '=>', gamesDoc.data());
+                    let day = {
+                        date: gamesDoc.id,
+                        matches: gamesDoc.data().matches
+                    };
+                    arrayGames.push(day);
+                });
+                console.log('=======arrayUsers');
+                console.log(arrayUsers);
+                const users = JSON.stringify(arrayUsers);
+                console.log('=======users');
+                console.log(users);
+                console.log('=======arrayGames');
+                console.log(arrayGames);
+                const games = JSON.stringify(arrayGames);
+                console.log('=======games');
+                console.log(games);
+                const output = `
         <!DOCTYPE html>
         <head>
             <meta charset="utf-8">
@@ -78,7 +84,19 @@ router.get('/', function (req, res, next) {
                         
                 window.onload = function () {            
                     const body = $("#body");
-                    const title = $("<br><h1>Yka Chaos Battle History</h1><br><h3>Player별 전적</h3>").appendTo(body);
+                    
+                    const date = new Date();                
+                    const year = date.getFullYear(); 
+                    let month = String(date.getMonth()+1); 
+                    let day = String(date.getDate());
+                    if(month.length === 1){ 
+                      month = "0" + month; 
+                    } 
+                    if(day.length === 1){ 
+                      day = "0" + day; 
+                    }
+                    const today = year + month + day;
+                    $("#date").val(today);
                     
                     const games = JSON.parse('${games}');
                     const users = JSON.parse('${users}');
@@ -153,11 +171,35 @@ router.get('/', function (req, res, next) {
             </script>
         </head>
         <body>
-            <div id="body"></div>    
-        </body>`;
-            res.send(output);
+            <div id="body">
+                <br>
+                <h1>Yka Chaos Battle History</h1><br>
+                <form action="/game" method="post">
+                    <h3>오늘의 전적 입력</h3> 
+                    <input id="saveGame" type="submit" value="전적입력"><br>                
+                    날짜 : <input id="date" type="text"><br>
+                    <strong>언데드</strong><br>
+                    <label for="player">플레이어(id):</label> <input type="text"> 
+                    <label for="hero">영웅:</label> <input type="text"> 
+                    <label for="result">결과:</label> <input type="text"><br>
+                    플레이어(id) : <input type="text"> 영웅 : <input type="text"> 결과 : <input type="text"><br>
+                    플레이어(id) : <input type="text"> 영웅 : <input type="text"> 결과 : <input type="text"><br>
+                    플레이어(id) : <input type="text"> 영웅 : <input type="text"> 결과 : <input type="text"><br>
+                    플레이어(id) : <input type="text"> 영웅 : <input type="text"> 결과 : <input type="text"><br>
+                    <strong>나엘</strong><br>
+                    플레이어(id) : <input type="text"> 영웅 : <input type="text"> 결과 : <input type="text"><br>
+                    플레이어(id) : <input type="text"> 영웅 : <input type="text"> 결과 : <input type="text"><br>
+                    플레이어(id) : <input type="text"> 영웅 : <input type="text"> 결과 : <input type="text"><br>
+                    플레이어(id) : <input type="text"> 영웅 : <input type="text"> 결과 : <input type="text"><br>
+                    플레이어(id) : <input type="text"> 영웅 : <input type="text"> 결과 : <input type="text"><br>        
+                    <h3>Player별 전적</h3>    
+                </form>        
+            </div>            
+        </body>
+        </html>`;
+                res.send(output);
+            });
         });
     });
 });
-
 module.exports = router;

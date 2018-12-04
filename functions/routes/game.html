@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title> yka chaos </title>
+    <style>
+        div {
+            margin-top: 10px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        body {
+            margin-left: 30px;
+        }
+
+        th, td {
+            text-align: center;
+            border: 1px gray solid;
+        }
+
+        .inputBattles {
+            text-align: center;
+            float: left;
+            width: 100%;
+            border: 2px dashed antiquewhite;
+            background-color: white;
+        }
+
+        .preCondition {
+            text-align: center;
+            float: left;
+            width: 100%;
+            background-color: white;
+        }
+
+        .scrollDiv {
+            text-align: left;
+            padding-top: 10px;
+            padding-left: 20px;
+            width: 600px;
+            margin: auto;
+            overflow: scroll;
+            height: 170px;
+        }
+
+        .dateAndresult {
+            text-align: center;
+            float: left;
+            width: 100%;
+        }
+
+        .date {
+            text-align: right;
+            float: left;
+            width: 50%;
+        }
+
+        .result {
+            text-align: left;
+            float: left;
+            width: 50%;
+        }
+
+        .scourge {
+            padding-top: 10px;
+            text-align: center;
+            margin: auto;
+            background-color: #f0f0f0;
+        }
+
+        .sentinel {
+            padding-top: 10px;
+            text-align: center;
+            margin: auto;
+            background-color: #fffcee;
+        }
+
+        .users {
+            text-align: center;
+            float: left;
+            width: 100%;
+            border: 2px dashed antiquewhite;
+        }
+
+        .battles {
+            text-align: center;
+            float: left;
+            width: 100%;
+            border: 2px dashed antiquewhite;
+            margin-bottom: 50px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmlson.js@1.0.4/src/htmlson.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase-firestore.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script src="ykaChaos.js"></script>
+</head>
+<body>
+<div id="body">
+    <div class="title">
+        <br>
+        <h1>Yka Chaos Battle History</h1><br>
+    </div>
+    <div class="inputBattles">
+        <div class="preCondition">
+            <h3 align="center">오늘의 전적 입력</h3>
+            <button id="saveGame" onclick='putGame()'>전적입력</button>&nbsp;&nbsp;&nbsp;
+            <button id="getRandom" onclick='getRandom()'>캐릭랜덤선택</button>
+            <br>
+            <div class="scrollDiv" id="randomResult" style="overflow:scroll; height:170px"></div>
+            <div class="dateAndresult">
+                <div class="date">
+                    날짜 <input id="date" type="text" style="width:70px">&nbsp;
+                </div>
+                <div class="result">
+                    &nbsp;
+                    결과
+                    <select id="result">
+                        <option value="scourge">언데드</option>
+                        <option value="sentinel">나엘</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="scourge">
+            <strong>언데드</strong><br>
+            플레이어<select class="player" id="player0" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero0" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat0" type="text"></select><br>
+            플레이어<select class="player" id="player1" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero1" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat1" type="text"></select><br>
+            플레이어<select class="player" id="player2" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero2" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat2" type="text"></select><br>
+            플레이어<select class="player" id="player3" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero3" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat3" type="text"></select><br>
+            플레이어<select class="player" id="player4" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero4" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat4" type="text"></select><br>
+        </div>
+        <div class="sentinel">
+            <strong>나이트엘프</strong><br>
+            플레이어<select class="player" id="player5" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero5" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat5" type="text"></select><br>
+            플레이어<select class="player" id="player6" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero6" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat6" type="text"></select><br>
+            플레이어<select class="player" id="player7" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero7" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat7" type="text"></select><br>
+            플레이어<select class="player" id="player8" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero8" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat8" type="text"></select><br>
+            플레이어<select class="player" id="player9" type="text" style="width:110px"></select>
+            영웅<select class="champion" name="states[]" style="width:200px" id="hero9" type="text"></select>
+            속성<select class="stat" style="width:50px" id="stat9" type="text"></select><br>
+        </div>
+    </div>
+
+    <div class="users">
+        <h3 align="center">Player별 전적</h3>
+    </div>
+
+    <div class="battles">
+
+    </div>
+</div>
+</body>

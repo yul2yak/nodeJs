@@ -503,22 +503,38 @@ function getUsersFromDb(querySnapshot) {
     });
 }
 
-const dbRandoms = db.collection('randoms').orderBy('date').get().then((querySnapshot) => {
-    let preDate = getNow();
-    let count = 0;
+function showRandomResult(randoms) {
+    let prevDate = getNow();
+    let count = 0, isFirst = true;
+    const randomResult = $('#randomResult');
+    randoms.forEach(random => {
+        count++;
+        if (count === 1) {
+            prevDate = random.date;
+        }
+        if (prevDate !== random.date) {
+            prevDate = random.date;
+            if (isFirst) {
+                randomResult.html(`<span style="background-color: lightyellow">${randomResult.html()}</span>`);
+                isFirst = false;
+            }
+            randomResult.append('----------------------------------<br>');
+        }
+        randomResult.append(`${random.date} ${random.name}(${random.id}) -> ${random.result}` + '<br>');
+    });
+}
+
+db.collection('randoms').orderBy('date', 'desc').get().then((querySnapshot) => {
+    let randoms = [];
     querySnapshot.forEach((doc) => {
         //console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-        const result = doc.data();
-        const randomResult = $('#randomResult');
-        if (preDate !== result.date) {
-            preDate = result.date;
-            randomResult.prepend('----------------------------------<br>');
-        }
-        randomResult.prepend(`${result.date} ${result.name}(${result.id}) -> ${result.result}` + '<br>');
+        randoms.push(doc.data());
     });
-    const dbGames = db.collection('games').get().then((querySnapshot) => {
+    showRandomResult(randoms);
+
+    db.collection('games').get().then((querySnapshot) => {
         getGamesFromDb(querySnapshot);
-        const dbUsers = db.collection('users').get().then((querySnapshot) => {
+        db.collection('users').get().then((querySnapshot) => {
             getUsersFromDb(querySnapshot);
 
             games = getFilteredGames(games);

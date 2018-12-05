@@ -11,8 +11,8 @@ const config = {
 const firestoreapp = firebase.initializeApp(config);
 const db = firebase.firestore(firestoreapp);
 
-let arrayGames = [];
-let arrayUsers = [];
+let games = [];
+let users = [];
 
 const status = [
     "All",
@@ -188,13 +188,13 @@ function makePlayerColumn(tr, users, team, i) {
     if (player.length === 0) {
         return;
     }
-    console.log(player);
+    //console.log(player);
     td.html(player[0].name);
     td = $("<td>").appendTo(tr);
     td.html(team.players[i].hero);
     td = $("<td>").appendTo(tr);
     td.html(team.result);
-    if(team.result === '승') {
+    if (team.result === '승') {
         redAndBold(td);
     }
 }
@@ -214,7 +214,6 @@ function setBattlesOnEachDate(table, day, seq, users, match, i) {
 }
 
 function makeTableHeaderForUser(table) {
-    console.log('makeTableHeaderForUser');
     const fields = [
         {"text": "ID", "width": 100},
         {"text": "이름", "width": 100},
@@ -265,23 +264,19 @@ function makeTableHeader(table) {
 function makeTable(div) {
     let table;
     table = $("<table>").appendTo(div);
-    table.css({"border-collapse": "collapse", "border": "1px gray solid", "margin": "auto"});
+    table.css({'border-collapse': 'collapse', 'border': '1px gray solid', 'margin': 'auto'});
     return table;
 }
 
-function setOptionsForPlayerSelector(users, playerSelector) {
-    //console.log(`playerSelectors:${playerSelector.value}`);
+function setOptionsForPlayerSelector(users, selector) {
     users.forEach(user => {
-        const option = document.createElement("option");
+        const option = document.createElement('option');
         option.value = user.id;
         option.text = user.name + ":" + user.id;
-        playerSelector.append(option);
+        selector.append(option);
     });
-    const option = document.createElement("option");
-    option.value = "";
-    option.text = "";
-    playerSelector.append(option);
-    playerSelector.value = ""
+    selector.val('');
+    selector.trigger('change');
 }
 
 function setOptionsForAllPlayerSelectors(users) {
@@ -297,13 +292,15 @@ function setOptionsForAllPlayerSelectors(users) {
     setOptionsForPlayerSelector(users, $('#player9'));
 }
 
-function setOptionsForChampionSelector(championSelector) {
+function setOptionsForChampionSelector(selector) {
     champions.forEach(champion => {
-        const option = document.createElement("option");
+        const option = document.createElement('option');
         option.value = champion.name;
         option.text = champion.name + ":" + champion.primary + ":" + champion.team;
-        championSelector.append(option);
+        selector.append(option);
     });
+    selector.val('');
+    selector.trigger('change');
 }
 
 function setOptionsForAllChampionSelectors() {
@@ -321,7 +318,7 @@ function setOptionsForAllChampionSelectors() {
 
 function setOptionsForStatusSelector(selector) {
     status.forEach(value => {
-        const option = document.createElement("option");
+        const option = document.createElement('option');
         option.value = value;
         option.text = value;
         selector.append(option);
@@ -341,11 +338,16 @@ function setOptionsForAllStatusSelectors() {
     setOptionsForStatusSelector($('#stat9'));
 }
 
-
 // select2 for selecting champion
 $(document).ready(function () {
-    $('.player').select2();
-    $('.champion').select2();
+    $('.player').select2({
+        id: '',
+        placeholder: '플레이어',
+    });
+    $('.champion').select2({
+        id: '',
+        placeholder: '영웅',
+    });
     $('.stat').select2();
 });
 
@@ -356,8 +358,8 @@ function replaceAll(str, searchStr, replaceStr) {
 function getGamesThatUserJoined(games, user) {
     return games.flatMap(day => {
         return day.matches.map(match => {
-            console.log(typeof(match.scourge.players));
-            console.log(JSON.stringify(match.scourge.players));
+            //console.log(JSON.stringify(match.scourge.players));
+            //console.log(JSON.stringify(match.sentinel.players));
             const scourgeResult = match.scourge.players.filter(player => player.id === user.id);
             const sentinelResult = match.sentinel.players.filter(player => player.id === user.id);
             if (scourgeResult.length > 0) {
@@ -373,15 +375,15 @@ function getGamesThatUserJoined(games, user) {
 
 function getUserDataWithGameHistory(games, user) {
     const userGames = getGamesThatUserJoined(games, user);
-    console.log('check userGames result');
-    console.log(userGames);
+    //console.log(`check userGames result : ${userGames}`);
     const userBattles = userGames.filter(result => result !== "").length;
     const userWins = userGames.filter(result => result === "승").length;
     const userLoses = userGames.filter(result => result === "패").length;
     const userDraws = userGames.filter(result => result === "무").length;
     let userWinRate = (userBattles - userDraws) === 0 ? 0 : userWins / (userBattles - userDraws);
     userWinRate = Math.floor(userWinRate * 100) + "%";
-    return { id: user.id, name: user.name,
+    return {
+        id: user.id, name: user.name,
         battles: userBattles, wins: userWins, loses: userLoses, draws: userDraws,
         rate: userWinRate, point: userWins - userLoses
     };
@@ -452,7 +454,7 @@ function makeTableForBattleHistory(games, table, users) {
     $.each(games, function (index, date) {
         day++;
         date.matches.forEach(match => {
-            console.log(`length:${match.scourge.players.length}, match:${match}`);
+            console.log(`length:${match.scourge.players.length}, match:${JSON.stringify(match)}`);
             seq++;
             for (let i = 0; i < match.scourge.players.length; i++) {
                 tr = setBattlesOnEachDate(table, date, seq, users, match, i);
@@ -470,8 +472,8 @@ function makeTableForBattleHistory(games, table, users) {
 function getFilteredGames(games) {
     games.forEach(day => {
         day.matches.forEach(match => {
-            match.scourge.players = match.scourge.players.filter(player => player.id !== '');
-            match.sentinel.players = match.sentinel.players.filter(player => player.id !== '');
+            match.scourge.players = match.scourge.players.filter(player => player.id !== '' && player.id !== null);
+            match.sentinel.players = match.sentinel.players.filter(player => player.id !== '' && player.id !== null);
         });
         day.matches = day.matches.filter(match => match.scourge.players.length > 0 && match.sentinel.players.length > 0);
     });
@@ -481,23 +483,23 @@ function getFilteredGames(games) {
 
 function getGamesFromDb(querySnapshot) {
     querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
+        //console.log(`${doc.id} => ${doc.data()}`);
         let day = {
             date: doc.id,
             matches: doc.data().matches
         };
-        arrayGames.push(day);
+        games.push(day);
     });
 }
 
 function getUsersFromDb(querySnapshot) {
     querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
+        //console.log(`${doc.id} => ${doc.data()}`);
         let user = {
             id: doc.id,
             name: doc.data().name
         };
-        arrayUsers.push(user);
+        users.push(user);
     });
 }
 
@@ -505,9 +507,7 @@ const dbRandoms = db.collection('randoms').orderBy('date').get().then((querySnap
     let preDate = getNow();
     let count = 0;
     querySnapshot.forEach((doc) => {
-        //count++;
-        //if (count > 3) doc.delete();
-        console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+        //console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
         const result = doc.data();
         const randomResult = $('#randomResult');
         if (preDate !== result.date) {
@@ -520,16 +520,6 @@ const dbRandoms = db.collection('randoms').orderBy('date').get().then((querySnap
         getGamesFromDb(querySnapshot);
         const dbUsers = db.collection('users').get().then((querySnapshot) => {
             getUsersFromDb(querySnapshot);
-
-            // Get games, users from firebase database
-            const strUsers = JSON.stringify(arrayUsers);
-            console.log(`strUsers:${strUsers}`);
-            const strGames = JSON.stringify(arrayGames);
-            console.log(`strGames:${strGames}`);
-            let games = JSON.parse(strGames);
-            const users = JSON.parse(strUsers);
-            console.log(games);
-            console.log(users);
 
             games = getFilteredGames(games);
             console.log(`filtered games:${JSON.stringify(games)}`);
@@ -564,12 +554,14 @@ function putGame() {
     ];
 
     const date = $('#date').val();
-    const result = $('#result').val();
+    const result = $("input[name='result']:checked").val();
+    //const result = $('#result').val();
     let scourge = [];
     let sentinel = [];
     let i = 0;
     players.forEach(player => {
-        if (player.val() === '') {
+        if (player.val() === '' || player.val() === null || player.val() === undefined
+            || heroes[i].val() === '' || heroes[i].val() === null || heroes[i].val() === undefined) {
             i++;
             return;
         }
@@ -582,15 +574,18 @@ function putGame() {
     console.log(`result=${result}`);
     console.log(`scourge=${scourge}`);
     console.log(`sentinel=${sentinel}`);
+    if (scourge.length === 0 || sentinel.length === 0) {
+        return;
+    }
     const game = {
         scourge: {
             players: scourge,
-            result: result === 'scourge' ? "승" : "패",
+            result: result === 'scourge' ? "승" : result === 'sentinel' ? "패" : "무",
             score: result === 'scourge' ? 100 : 0
         },
         sentinel: {
             players: sentinel,
-            result: result === 'sentinel' ? "승" : "패",
+            result: result === 'sentinel' ? "승" : result === 'scourge' ? "패" : "무",
             score: result === 'sentinel' ? 100 : 0
         }
     };

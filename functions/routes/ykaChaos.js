@@ -438,9 +438,9 @@ function makeTableForUser(table, users, games) {
             index = index + 1 + sameResult;
             td.html(index); // 랭킹
             sameResult = 0;
-            if (index === 1) {
-                redAndBold(td);
-            }
+        }
+        if (index === 1) {
+            redAndBold(td);
         }
         prevUser = user;
     });
@@ -594,6 +594,7 @@ function putGame() {
     console.log(`scourge=${scourge}`);
     console.log(`sentinel=${sentinel}`);
     if (scourge.length === 0 || sentinel.length === 0) {
+        alert('전적을 입력하세요');
         return;
     }
     const game = {
@@ -617,6 +618,7 @@ function putGame() {
         } else {
             db.collection('games').doc(date).set({"matches": [game]});
         }
+        alert('전적 입력 완료');
     });
 }
 
@@ -646,12 +648,14 @@ function getRandom() {
             users.push(user);
         });
         $('#randomResult').prepend('----------------------------------<br>');
+        let count = 0;
         players.forEach(player => {
             console.log(`getRandom index:${index} player:${player.val()} status:${status[index].val()}`);
             if (player.val() === '' || player.val() === undefined || player.val() === null) {
                 index++;
                 return;
             }
+            count++;
             let filteredChampions = status[index].val() === 'All' ? champions : champions.filter(champion => champion.primary === status[index].val());
             let rangeMax = status[index].val() === 'All' ? 70 : status[index].val() === '지' ? 22 : 24;
             let random = Math.floor((Math.random() * rangeMax));
@@ -667,5 +671,10 @@ function getRandom() {
             $('#randomResult').prepend(`<span style="background-color: #ffeeff">${result.date} ${result.name}(${result.id}) -> ${result.result}</span><br>`);
             index++;
         });
+        if (count === 0) {
+            alert('플레이어를 선택하세요');
+        } else {
+            alert('랜덤 생성 완료!');
+        }
     });
 }

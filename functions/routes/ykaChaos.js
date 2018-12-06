@@ -183,9 +183,15 @@ function redAndBold(td) {
 function makePlayerColumn(tr, users, team, i) {
     let td = $("<td>").appendTo(tr);
     let player = users.filter(user => {
+        if (team.players[i] === undefined) return false;
         return user.id === team.players[i].id;
     });
     if (player.length === 0) {
+        td.html('');
+        td = $("<td>").appendTo(tr);
+        td.html('');
+        td = $("<td>").appendTo(tr);
+        td.html('');
         return;
     }
     //console.log(player);
@@ -201,7 +207,7 @@ function makePlayerColumn(tr, users, team, i) {
 
 function setBattlesOnEachDate(table, day, seq, users, match, i) {
     if (match.scourge.players[i].id === ''
-        || match.sentinel.players[i].id === ''
+        && match.sentinel.players[i].id === ''
     ) {
         return;
     }
@@ -263,7 +269,7 @@ function makeTableHeader(table) {
 
 function makeTable(div) {
     let table;
-    table = $("<table>").appendTo(div);
+    table = $(`<table class="table">`).appendTo(div);
     table.css({'border-collapse': 'collapse', 'border': '1px gray solid', 'margin': 'auto'});
     return table;
 }
@@ -458,7 +464,8 @@ function makeTableForBattleHistory(games, table, users) {
         day++;
         date.matches.forEach(match => {
             console.log(`length:${match.scourge.players.length}, match:${JSON.stringify(match)}`);
-            for (let i = 0; i < match.scourge.players.length; i++) {
+            const length = Math.max(match.scourge.players.length, match.sentinel.players.length);
+            for (let i = 0; i < length; i++) {
                 tr = setBattlesOnEachDate(table, date, seq, users, match, i);
                 if (day % 2 === 0) {
                     tr.css('background-color', 'MintCream');
@@ -521,7 +528,7 @@ function showRandomResult(randoms) {
                 randomResult.html(`<span style="background-color: lightyellow">${randomResult.html()}</span>`);
                 isFirst = false;
             }
-            randomResult.append('----------------------------------<br>');
+            randomResult.append('---------------------------------------------------------<br>');
         }
         randomResult.append(`${random.date} ${random.name}(${random.id}) -> ${random.result}` + '<br>');
     });
@@ -620,6 +627,8 @@ function putGame() {
         }
         alert('전적 입력 완료');
     });
+    /*const table = $(".battles").children('.table');
+    table*/
 }
 
 function getRandom() {
@@ -647,7 +656,7 @@ function getRandom() {
             };
             users.push(user);
         });
-        $('#randomResult').prepend('----------------------------------<br>');
+        $('#randomResult').prepend('---------------------------------------------------------<br>');
         let count = 0;
         players.forEach(player => {
             console.log(`getRandom index:${index} player:${player.val()} status:${status[index].val()}`);

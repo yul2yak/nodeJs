@@ -664,7 +664,7 @@ function getRandom() {
             let user = users.find(user => user.id === player.val());
             let result = {date: getNow(), name: user.name, id: player.val(), result: heroes[index].val()};
             db.collection('randoms').add(result);
-            $('#randomResult').prepend(`${result.date} ${result.name}(${result.id}) -> ${result.result}` + '<br>');
+            $('#randomResult').prepend(`<span style="background-color: #ffeeff">${result.date} ${result.name}(${result.id}) -> ${result.result}</span><br>`);
             index++;
         });
     });

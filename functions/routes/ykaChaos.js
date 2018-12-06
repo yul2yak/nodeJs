@@ -451,11 +451,13 @@ function makeTableForBattleHistory(games, table, users) {
     games.sort(function (a, b) {
         return b.date - a.date;
     });
+    games.forEach(date => {
+        seq += date.matches.length;
+    });
     $.each(games, function (index, date) {
         day++;
         date.matches.forEach(match => {
             console.log(`length:${match.scourge.players.length}, match:${JSON.stringify(match)}`);
-            seq++;
             for (let i = 0; i < match.scourge.players.length; i++) {
                 tr = setBattlesOnEachDate(table, date, seq, users, match, i);
                 if (day % 2 === 0) {
@@ -465,6 +467,7 @@ function makeTableForBattleHistory(games, table, users) {
                 }
             }
             tr.css('border-bottom', '2px solid black');
+            seq--;
         });
     });
 }
@@ -645,7 +648,7 @@ function getRandom() {
         $('#randomResult').prepend('----------------------------------<br>');
         players.forEach(player => {
             console.log(`getRandom index:${index} player:${player.val()} status:${status[index].val()}`);
-            if (player.val() === '') {
+            if (player.val() === '' || player.val() === undefined || player.val() === null) {
                 index++;
                 return;
             }
